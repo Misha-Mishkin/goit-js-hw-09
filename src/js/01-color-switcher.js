@@ -19,7 +19,6 @@ startBtn.addEventListener("click", () => {
     }
 
     timerId = setInterval(changeBodyBackgroundColor, PROMPT_DELAY);
-    console.log(timerId);
     stopBtnClicked = true;
 });
 
