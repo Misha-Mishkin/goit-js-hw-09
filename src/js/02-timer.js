@@ -14,8 +14,7 @@ const refs = {
 };
 
 let timerId = null;
-let endTime = null;
-startBtn.disabled = false;
+refs.startBtn.disabled = true;
 
 const options = {
   enableTime: true,
@@ -28,17 +27,18 @@ const options = {
 };
 
 flatpickr(refs.input, options);
-
+let endDate;
+let deltaTime;
 function checkDate(value) {
-    startBtn.disabled = true;
+    refs.startBtn.disabled = true;
 
-    const currentTime = new Date();
+    const currentTime = Date.now();
     if (value < currentTime) {
         Notify.failure("Please choose a date in the future");
         return;
     }
-    startBtn.disabled = false;
-    endDate = value.getTime();
+    refs.startBtn.disabled = false;
+    endDate = value;
 }
 
 refs.startBtn.addEventListener('click', startTime);
@@ -50,14 +50,13 @@ function startTime () {
         }        
 
     timerId = setInterval(() => {
-        const currentTime = new Date().getTime();
-        const deltaTime = endTime - currentTime;
-        const { days, hours, minutes, seconds } = convertMs(deltaTime);
-
-        console.log(`${days}:${hours}:${minutes}:${seconds}`);
+        const time = convertMs(endDate - Date.now());
+        updateClockFace(time);
+        console.log(updateClockFace(time));
     }, 1000);
-    startBtn.disabled = true;
-    input.disabled = true;
+
+    refs.startBtn.disabled = true;
+    refs.input.disabled = true;
 }
 
 function addLeadingZero(num) {
@@ -70,12 +69,19 @@ function convertMs(ms) {
   const hour = minute * 60;
   const day = hour * 24;
 
-  const days = addLeadingZero(Math.floor(ms / day));
-  const hours = addLeadingZero(Math.floor((ms % day) / hour));
-  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
-  const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
 };
+
+function updateClockFace({ days, hours, minutes, seconds }) {
+    refs.days.textContent = addLeadingZero(days);
+    refs.hours.textContent = addLeadingZero(hours);
+    refs.minutes.textContent = addLeadingZero(minutes);
+    refs.seconds.textContent = addLeadingZero(seconds);
+}
 
 
